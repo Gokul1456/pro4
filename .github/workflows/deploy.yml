@@ -1,0 +1,40 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Deploy to AWS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            mkdir -p ~/apps/leo
+            cd ~/apps/leo
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/yourusername/leo-app.git .
+            else
+              git pull origin main
+            fi
+            npm install
+            pm2 restart leo || pm2 start app.js --name leo
