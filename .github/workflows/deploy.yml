@@ -35,7 +35,7 @@ jobs:
 
             # Clone or update repo
             if [ ! -d ".git" ]; then
-              git clone git@github.com:yourusername/leo-app.git .
+              git clone https://github.com/Gokul1456/pro4.git .
             else
               git reset --hard
               git pull origin main
